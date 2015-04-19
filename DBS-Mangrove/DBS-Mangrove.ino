@@ -15,7 +15,7 @@ Hardware hookup:
   SDA (A4) --\/330 Ohm\/--    SDA
   SCL (A5) --\/330 Ohm\/--    SCL
 
-The MMA8452Q is a 3.3V max sensor, so you'll need to do some 
+The MMA8452Q is a 3.3V max sensor, so you'll need to do some
 level-shifting between the Arduino and the breakout. Series
 resistors on the SDA and SCL lines should do the trick.
 
@@ -36,7 +36,19 @@ Distributed as-is; no warranty is given.
 //  here on out.
 MMA8452Q accel;
 
-LEDPIN = 2;
+//Hardware Define
+const int LEDPIN = 2;
+
+//Operational Parameters:
+const int PERIOD = 1000; //in ms, defines the frequency of the blinking; period = 1/freq
+
+const int MIN_BRITE = 0;
+const int MAX_BRITE = 255;
+// const int RNG_BRITE = MAX_BRITE - MIN_BRITE;
+// const int AVG_BRITE = RNG_BRITE/2 + MIN_BRITE;
+
+//Tools
+const float deg2rad_conv = 3.14/180;   // # deg * deg2rad_conv = radians
 
 // The setup function simply starts serial and initializes the
 //  accelerometer.
@@ -44,7 +56,7 @@ void setup()
 {
   Serial.begin(9600);
   Serial.println("MMA8452Q Test Code!");
-  
+
   // Choose your adventure! There are a few options when it comes
   // to initializing the MMA8452Q:
   //  1. Default init. This will set the accelerometer up
@@ -59,7 +71,7 @@ void setup()
   //     want control over how fast your accelerometer produces
   //     data use one of the following options in the second param:
   //     ODR_800, ODR_400, ODR_200, ODR_100, ODR_50, ODR_12,
-  //     ODR_6, or ODR_1. 
+  //     ODR_6, or ODR_1.
   //     Sets to 800, 400, 200, 100, 50, 12.5, 6.25, or 1.56 Hz.
   //accel.init(SCALE_8G, ODR_6);
 
@@ -76,26 +88,37 @@ void loop()
   {
     // First, use accel.read() to read the new variables:
     accel.read();
-    
-    // // accel.read() will update two sets of variables. 
-    // // * int's x, y, and z will store the signed 12-bit values 
-    // //   read out of the accelerometer.
-    // // * floats cx, cy, and cz will store the calculated 
-    // //   acceleration from those 12-bit values. These variables 
-    // //   are in units of g's.
-    // // Check the two function declarations below for an example
-    // // of how to use these variables.
-    // printCalculatedAccels();
-    // //printAccels(); // Uncomment to print digital readings
-    // 
-    // // The library also supports the portrait/landscape detection
-    // //  of the MMA8452Q. Check out this function declaration for
-    // //  an example of how to use that.
-    // printOrientation();
-    // 
-    // Serial.println(); // Print new line every time.
+
+    // accel.read() will update two sets of variables.
+    // * int's x, y, and z will store the signed 12-bit values
+    //   read out of the accelerometer.
+    // * floats cx, cy, and cz will store the calculated
+    //   acceleration from those 12-bit values. These variables
+    //   are in units of g's.
+    // Check the two function declarations below for an example
+    // of how to use these variables.
+    printCalculatedAccels();
+    //printAccels(); // Uncomment to print digital readings
+
+    // The library also supports the portrait/landscape detection
+    //  of the MMA8452Q. Check out this function declaration for
+    //  an example of how to use that.
+    printOrientation();
+
+    Serial.println(); // Print new line every time.
+    Serial.print('Magnitude = ');
+    magnitude = sqrt(sq(accel.cx)+sq(accel.cy)+sq(accel.cz));
+    Serial.println(magnitude, 3);
   }
-  
+
+  target = (int)(sin(counter*deg2rad_conv)*100)
+  functional_min_brite = MIN_BRITE;
+  functional_max_brite = MAX_BRITE;
+  output = map(target,-100,100,functional_min_brite,functional_max_brite);
+  analogWrite(LEDPIN, output);
+
+  wait(1000);
+  counter = constrain(counter+1, 0, 359)  
 }
 
 // The function demonstrates how to use the accel.x, accel.y and
@@ -116,8 +139,8 @@ void printAccels()
 //  and accel.cz variables.
 // Before using these variables you must call the accel.read()
 //  function!
-void printCalculatedAccels()
-{ 
+void printCalculatedAccels( )
+{
   Serial.print(accel.cx, 3);
   Serial.print("\t");
   Serial.print(accel.cy, 3);
@@ -155,4 +178,3 @@ void printOrientation()
     break;
   }
 }
-
