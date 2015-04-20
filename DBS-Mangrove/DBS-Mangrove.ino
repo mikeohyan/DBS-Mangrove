@@ -37,10 +37,11 @@ Distributed as-is; no warranty is given.
 MMA8452Q accel;
 
 //Hardware Define
-const int LEDPIN = 2;
+const int LEDPIN = 3;
 
 //Operational Parameters:
-const int PERIOD = 1000; //in ms, defines the frequency of the blinking; period = 1/freq
+const int PERIOD = 250; //in ms, defines the frequency of the blinking; period = 1/freq
+const int DELAY_LENGTH = 10;
 
 const int MIN_BRITE = 0;
 const int MAX_BRITE = 255;
@@ -49,6 +50,14 @@ const int MAX_BRITE = 255;
 
 //Tools
 const float deg2rad_conv = 3.14/180;   // # deg * deg2rad_conv = radians
+
+float magnitude = 0.0;
+int target = 0;
+int output = 0;
+int counter = 0;
+int functional_min_brite = 0;
+int functional_max_brite = 0;
+
 
 // The setup function simply starts serial and initializes the
 //  accelerometer.
@@ -111,14 +120,27 @@ void loop()
     Serial.println(magnitude, 3);
   }
 
-  target = (int)(sin(counter*deg2rad_conv)*100)
+  target = (int)(sin(counter*deg2rad_conv)*100);
   functional_min_brite = MIN_BRITE;
   functional_max_brite = MAX_BRITE;
   output = map(target,-100,100,functional_min_brite,functional_max_brite);
   analogWrite(LEDPIN, output);
+  Serial.print("LED Status: ");
+  Serial.print("\t");
+  Serial.print(target);
+  Serial.print("\t");
+  Serial.print(output);
+  Serial.print("\t");
+  Serial.print(counter);
+  Serial.println();
 
-  wait(1000);
-  counter = constrain(counter+1, 0, 359)  
+//  delay(DELAY_LENGTH);
+  delayMicroseconds(5);
+//  counter = counter + 8;
+  counter = counter + random(5,15);
+  if (counter > 359){
+    counter = 0;
+  }
 }
 
 // The function demonstrates how to use the accel.x, accel.y and
