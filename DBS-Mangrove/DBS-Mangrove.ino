@@ -38,6 +38,9 @@ MMA8452Q accel;
 
 //Hardware Define
 const int LEDPIN = 3;
+const int LEDPIN0 = 3;
+const int LEDPIN1 = 5;
+const int LEDPIN2 = 9;
 
 //Operational Parameters:
 const int PERIOD = 250; //in ms, defines the frequency of the blinking; period = 1/freq
@@ -124,7 +127,11 @@ void loop()
   functional_min_brite = MIN_BRITE;
   functional_max_brite = MAX_BRITE;
   output = map(target,-100,100,functional_min_brite,functional_max_brite);
-  analogWrite(LEDPIN, output);
+//  analogWrite(LEDPIN, output);
+  analogWrite(LEDPIN0, output);
+  analogWrite(LEDPIN1, output);
+  analogWrite(LEDPIN2, output);
+  
   Serial.print("LED Status: ");
   Serial.print("\t");
   Serial.print(target);
