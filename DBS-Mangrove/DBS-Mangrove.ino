@@ -53,6 +53,7 @@ const int MAX_BRITE = 255;
 
 //Tools
 const float deg2rad_conv = 3.14/180;   // # deg * deg2rad_conv = radians
+const int MAGNIFIER = 100;
 
 float magnitude = 0.0;
 int target = 0;
@@ -61,6 +62,10 @@ int counter = 0;
 int functional_min_brite = 0;
 int functional_max_brite = 0;
 
+int amplitude = 1;
+int period = 1;
+int phaseshift = 0;
+int verticalshift = 0;
 
 // The setup function simply starts serial and initializes the
 //  accelerometer.
@@ -123,10 +128,12 @@ void loop()
     Serial.println(magnitude, 3);
   }
 
-  target = (int)(sin(counter*deg2rad_conv)*100);
+  //target = (int)(sin(counter*deg2rad_conv)*100);
+  target = (int)amplitude * sin(period*(counter*deg2rad_conv) - phaseshift) * MAGNIFIER;
+  
   functional_min_brite = MIN_BRITE;
   functional_max_brite = MAX_BRITE;
-  output = map(target,-100,100,functional_min_brite,functional_max_brite);
+  output = map(target,-1*MAGNIFIER,MAGNIFIER,functional_min_brite,functional_max_brite);
 //  analogWrite(LEDPIN, output);
   analogWrite(LEDPIN0, output);
   analogWrite(LEDPIN1, output);
