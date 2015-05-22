@@ -129,7 +129,7 @@ void loop()
   }
 
   //target = (int)(sin(counter*deg2rad_conv)*100);
-  target = (int)amplitude * sin(period*(counter*deg2rad_conv) - phaseshift) * MAGNIFIER;
+  target = (int)amplitude * sin(((period*counter)%360)*deg2rad_conv - phaseshift) * MAGNIFIER;
   
   functional_min_brite = MIN_BRITE;
   functional_max_brite = MAX_BRITE;
